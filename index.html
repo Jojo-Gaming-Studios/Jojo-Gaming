@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jojo Gaming Live Banner</title>
+    <style>
+        body {
+            background: transparent;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: white;
+        }
+        .banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .info {
+            text-align: left;
+        }
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .game {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner" id="banner">
+        <img id="logo" src="channels4_profile.jpg" alt="Jojo Gaming Logo">
+        <div class="info">
+            <div class="name" id="streamer-name">Lädt...</div>
+            <div class="game" id="streamer-game">Warten auf Daten...</div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchLiveStreamers() {
+            const response = await fetch("http://127.0.0.1:8000/live_streams");
+            const data = await response.json();
+            return data.live_streams;
+        }
+
+        async function updateBanner() {
+            const streamers = await fetchLiveStreamers();
+            if (streamers.length === 0) {
+                document.getElementById("streamer-name").innerText = "Kein Streamer online";
+                document.getElementById("streamer-game").innerText = "";
+                return;
+            }
+
+            let index = 0;
+            function showStreamer() {
+                const streamer = streamers[index];
+                document.getElementById("streamer-name").innerText = streamer.name;
+                document.getElementById("streamer-game").innerText = streamer.game;
+                index = (index + 1) % streamers.length;
+            }
+
+            showStreamer();
+            setInterval(showStreamer, 8000);  // Wechselt alle 8 Sekunden
+        }
+
+        updateBanner();
+    </script>
+</body>
+</html>
